@@ -3,7 +3,12 @@ package com.xpamii.notification.activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+
+import androidx.core.app.RemoteInput;
+
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String CHANNEL_ID = "my_channel_01";
 
+    private static final String KEY_TEXT_REPLY = "key_text_reply";
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> { // Request permission launcher.
@@ -70,16 +76,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Notification with action.
     private void sendNotification() {
+
+        Intent intent = new Intent(this, NotificationActivity.class); //
+        int requestCode = 0;
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, // Create pending intent.
+                requestCode,
+                intent,
+                PendingIntent.FLAG_MUTABLE);
+
+        RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)// Create remote input. (androidx.core.app.RemoteInput)
+                .setLabel("Type your message here") // Set label for remote input.
+                .build();
+
+        NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(R.drawable.ic_launcher_foreground, // Set icon for action.
+                "Reply", // Set title for action.
+                pendingIntent).addRemoteInput(remoteInput).build(); // Create action for notification.
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentTitle("Notification Title")
-                .setContentText("Notification Body")
+                .setContentTitle("Congratulations! Message from BMW ")
+                .setContentText("You have won new BMW M3 Competition. Please click here to claim your prize. ")
+                .addAction(replyAction)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);//
-
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             int notificationId = 1;
             managerCompat.notify(notificationId, builder.build());
@@ -87,6 +111,26 @@ public class MainActivity extends AppCompatActivity {
             checkAndRequestNotificationPermission();
         }
     }
+
+
+    // Normal test notification.  Do not use this in production.
+//    private void sendNotification() {
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_launcher_foreground)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setContentTitle("Notification Title")
+//                .setContentText("Notification Body")
+//                .setAutoCancel(true);
+//
+//        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);//
+//
+//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+//            int notificationId = 1;
+//            managerCompat.notify(notificationId, builder.build());
+//        } else {
+//            checkAndRequestNotificationPermission();
+//        }
+//    }
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
