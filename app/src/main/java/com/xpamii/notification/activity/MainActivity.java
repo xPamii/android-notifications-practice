@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String CHANNEL_ID = "my_channel_01";
 
-    private static final String KEY_TEXT_REPLY = "key_text_reply";
+   protected static final String KEY_TEXT_REPLY = "key_text_reply";
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> { // Request permission launcher.
