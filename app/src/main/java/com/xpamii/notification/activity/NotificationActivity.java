@@ -1,9 +1,11 @@
 package com.xpamii.notification.activity;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.RemoteInput;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -22,5 +24,12 @@ public class NotificationActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        Bundle bundle = RemoteInput.getResultsFromIntent(getIntent());
+        if (bundle != null){
+            CharSequence charSequence =  bundle.getCharSequence(MainActivity.KEY_TEXT_REPLY);
+            Toast.makeText(this, charSequence, Toast.LENGTH_SHORT).show();
+        }
+
     }
 }
